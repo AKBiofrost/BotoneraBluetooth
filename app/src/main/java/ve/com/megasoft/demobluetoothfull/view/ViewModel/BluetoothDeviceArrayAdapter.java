@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull;
+package ve.com.megasoft.demobluetoothfull.view.ViewModel;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;

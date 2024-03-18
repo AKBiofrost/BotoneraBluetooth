@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BTControlador.BTPermissions(this);
-        BTControlador.PermisoUbicacion();
+        BTControlador.PermisoUbicacion(this);
         BTControlador.checkPermissions(this);
         InstanciarObjetos();
         PermisoUbicacion();

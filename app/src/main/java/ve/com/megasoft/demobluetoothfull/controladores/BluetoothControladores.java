@@ -506,10 +506,10 @@ public class BluetoothControladores extends AppCompatActivity {
         Log.d(TAG, "mPairedDevicesArrayAdapterX: " + mPairedDevicesArrayAdapter);
     }
 
-    public void PermisoUbicacion() {
+    public void PermisoUbicacion(Context context) {
         // Ask for location permission if not already allowed
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
 
     }

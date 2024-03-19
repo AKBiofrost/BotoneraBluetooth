@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull.interfaz.utiles;
+package ve.com.bivfrostgroup.demobluetoothfull.interfaz.utiles;
 
 import android.content.Context;
 

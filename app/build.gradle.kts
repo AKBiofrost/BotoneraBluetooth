@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "ve.com.megasoft.demobluetoothfull"
+    namespace = "ve.com.bivfrostgroup.demobluetoothfull"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ve.com.megasoft.demobluetoothfull"
+        applicationId = "ve.com.bivfrostgroup.demobluetoothfull"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
@@ -34,6 +34,12 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    /*--------------------------------------------------------------------------------------------*/
+    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    /*--------------------------------------------------------------------------------------------*/
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

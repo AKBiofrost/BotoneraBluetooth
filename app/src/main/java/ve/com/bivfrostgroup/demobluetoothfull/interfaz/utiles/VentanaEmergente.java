@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull.interfaz.utiles;
+package ve.com.bivfrostgroup.demobluetoothfull.interfaz.utiles;
 
 
 import android.app.Activity;
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.json.JSONException;
 import java.io.IOException;
 
+import ve.com.bivfrostgroup.demobluetoothfull.R;
 
 
 public class VentanaEmergente {
@@ -25,6 +26,19 @@ public class VentanaEmergente {
     AlertDialog dialog;
     private Context contextA;
 
+
+
+    public void AlertDialog(String titulo, String mensaje, Context context){
+        alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setTitle(titulo);
+        alertDialogBuilder.setIcon(R.drawable.ic_launcher_background);
+        alertDialogBuilder.setMessage(mensaje).setCancelable(false)
+                .setPositiveButton("Aceptar", (dialog, id) -> {
+                    dialog.cancel();
+                });
+        CrearDialog();
+
+    }
 
 /*
     public void AlertDialog_error(String titulo, String mensaje, Context context) {
@@ -2565,16 +2579,15 @@ public class VentanaEmergente {
 
     }
 
-
+*/
     private void CrearDialog() {
         dialog = alertDialogBuilder.create();
         dialog.show();
     }
 
     public void CerrarDialog() {
-        Log.d(TAG, "CerrarDialog() called");
         dialog.dismiss();
     }
-*/
+
 
 }

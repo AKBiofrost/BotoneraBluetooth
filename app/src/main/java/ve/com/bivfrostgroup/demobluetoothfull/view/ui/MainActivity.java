@@ -1,5 +1,4 @@
-package ve.com.megasoft.demobluetoothfull.view.ui;
-
+package ve.com.bivfrostgroup.demobluetoothfull.view.ui;
 
 
 import androidx.activity.result.ActivityResult;
@@ -35,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -42,9 +42,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
 
-import ve.com.megasoft.demobluetoothfull.R;
-import ve.com.megasoft.demobluetoothfull.controladores.BluetoothControladores;
-import ve.com.megasoft.demobluetoothfull.controladores.ConnectedThread;
+import ve.com.bivfrostgroup.demobluetoothfull.R;
+import ve.com.bivfrostgroup.demobluetoothfull.controladores.BluetoothControladores;
+import ve.com.bivfrostgroup.demobluetoothfull.controladores.ConnectedThread;
+import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.OnResponse;
+import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.PeticionRetrofit;
+import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.config;
+import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.peticion;
+import ve.com.bivfrostgroup.demobluetoothfull.interfaz.model.DefinicionRespuestaRetrofit;
+import ve.com.bivfrostgroup.demobluetoothfull.interfaz.model.ErrorResponse;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,21 +89,25 @@ public class MainActivity extends AppCompatActivity {
 
     static String address;
     static String name;
-   static BluetoothControladores BTControlador = new BluetoothControladores();
+    static BluetoothControladores BTControlador = new BluetoothControladores();
     private Handler mHandler; // Our main handler that will receive callback notifications
     private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
+
+
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = this;
         BTControlador.BTPermissions(this);
         BTControlador.PermisoUbicacion(this);
         BTControlador.checkPermissions(this);
         InstanciarObjetos();
         PermisoUbicacion();
-        //config.calibrar.PantallaEncendida(this);
+        config.calibrar.PantallaEncendida(this);
 
     }
 
@@ -117,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         LimpiarLista();
         listPairedDevices();
         discover();
+
 
     }
 
@@ -312,17 +323,15 @@ public class MainActivity extends AppCompatActivity {
                 if (msg.what == MESSAGE_READ) {
                     String readMessage = null;
                     readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
-                    // mReadBuffer.setText(readMessage);
+                    config.Dialog.AlertDialog("BLuetooth", readMessage, mContext);
                 }
 
                 if (msg.what == CONNECTING_STATUS) {
                     char[] sConnected;
                     if (msg.arg1 == 1) {
-                        //  Log.i(URL_API.automatico, "SE CONECTO Y EMPAREJO");
-                        // config.calibrarPinpadBT.dispositivosBluetoothPinpad( MainActivity.this, address);
+                        config.Dialog.AlertDialog("Emparejo BLuetooth", "Connecting", mContext);
                     } else {
-                        // Log.i(URL_API.automatico, "msg.arg1: " + msg.arg1);
-                        //  config.Dialog.AlertDialog_alerta("Fallo al Emparejar", "No se pudo emparejar su dispositivo",  MainActivity.this);
+                        config.Dialog.AlertDialog("Ya estaba emparejado", "Connected", mContext);
                     }
 
                 }
@@ -518,6 +527,24 @@ public class MainActivity extends AppCompatActivity {
         mBTArrayAdapter.clear(); // clear items
     }
 
+
+    private void PeticionDemoEstructura() {
+
+        peticion.peticionRetrofit.PeticionServidor("", new JsonObject(), this,
+
+                new OnResponse() {
+                    @Override
+                    public void Response(DefinicionRespuestaRetrofit definicionRespuestaRetrofit) {
+                    }
+
+                    @Override
+                    public void ErrorResponse(ErrorResponse errorResponse) {
+
+                    }
+                }
+        );
+
+    }
 
     @Override
     protected void onDestroy() {

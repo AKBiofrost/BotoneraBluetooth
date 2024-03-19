@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull;
+package ve.com.bivfrostgroup.demobluetoothfull;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("ve.com.megasoft.demobluetoothfull", appContext.getPackageName());
+        assertEquals("ve.com.bivfrostgroup.demobluetoothfull", appContext.getPackageName());
     }
 }

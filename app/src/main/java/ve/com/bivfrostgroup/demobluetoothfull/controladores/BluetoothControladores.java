@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull.controladores;
+package ve.com.bivfrostgroup.demobluetoothfull.controladores;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 

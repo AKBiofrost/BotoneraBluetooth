@@ -23,12 +23,18 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:padding="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_paired_devices">
 
-
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardCornerRadius="20dp"
+            >
         <Button
             android:id="@+id/discover"
             android:layout_width="match_parent"
@@ -37,15 +43,24 @@
             android:textColor="@color/white"
             android:text="Nuevos Dispositivos" />
 
-
-        <ListView
-            android:id="@+id/devices_list_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:choiceMode="singleChoice">
+        </androidx.cardview.widget.CardView>
 
 
-        </ListView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="20dp"
+            android:padding="20dp"
+            app:cardCornerRadius="20dp"
+            >
+            <ListView
+                android:id="@+id/devices_list_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:choiceMode="singleChoice">
+            </ListView>
+        </androidx.cardview.widget.CardView>
+
 
     </LinearLayout>
 
@@ -59,7 +74,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout33">
 
-
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardCornerRadius="20dp"
+            >
         <Button
             android:id="@+id/discover2"
             android:textColor="@color/white"
@@ -67,17 +87,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Disponibles" />
+        </androidx.cardview.widget.CardView>
 
-
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="20dp"
+            android:padding="20dp"
+            app:cardCornerRadius="20dp"
+            >
         <ListView
             android:id="@+id/devices_list_view2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:choiceMode="singleChoice">
 
-
         </ListView>
-
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
     <Button
@@ -95,11 +121,11 @@
         android:id="@+id/Recargar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:background="@color/orange"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline_horizontal_center2" />
+        app:layout_constraintTop_toBottomOf="@+id/discover3" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_center"

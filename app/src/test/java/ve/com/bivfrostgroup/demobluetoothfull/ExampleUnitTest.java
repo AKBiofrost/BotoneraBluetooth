@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull;
+package ve.com.bivfrostgroup.demobluetoothfull;
 
 import org.junit.Test;
 

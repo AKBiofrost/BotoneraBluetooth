@@ -1,4 +1,4 @@
-package ve.com.megasoft.demobluetoothfull.controladores;
+package ve.com.bivfrostgroup.demobluetoothfull.controladores;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ve.com.megasoft.demobluetoothfull.view.ui.MainActivity;
+import ve.com.bivfrostgroup.demobluetoothfull.view.ui.MainActivity;
 
 public class ConnectedThread extends Thread {
     private final BluetoothSocket mmSocket;

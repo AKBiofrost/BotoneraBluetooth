@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -27,8 +28,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 
 public class BluetoothControladores extends AppCompatActivity {
     /********************************************************************************/
@@ -104,7 +108,7 @@ public class BluetoothControladores extends AppCompatActivity {
                 }
             });
 
-    private  ActivityResultLauncher<Intent> startActivityIntent = registerForActivityResult(
+    private ActivityResultLauncher<Intent> startActivityIntent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -112,6 +116,7 @@ public class BluetoothControladores extends AppCompatActivity {
                     // Add same code that you want to add in onActivityResult method
                 }
             });
+
     /********************************************************************************/
 
 
@@ -447,7 +452,6 @@ public class BluetoothControladores extends AppCompatActivity {
     };
 
 
-
     private final BroadcastReceiver mReceiverRRRRR = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -509,10 +513,34 @@ public class BluetoothControladores extends AppCompatActivity {
     public void PermisoUbicacion(Context context) {
         // Ask for location permission if not already allowed
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions((Activity)context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
 
     }
 
+    private UUID GetUUID() {
+        UUID uuidS = null;
+        try {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            Method getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
+            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(adapter, null);
 
+            if (uuids != null) {
+                for (ParcelUuid uuid : uuids) {
+                    Log.d(TAG, "UUID: " + uuid.getUuid().toString());
+                    uuidS = uuid.getUuid();
+                }
+            } else {
+                Log.d(TAG, "Uuids no encontrados, asegura habilitar Bluetooth!");
+            }
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return uuidS;
+    }
 }

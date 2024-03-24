@@ -165,6 +165,31 @@
         app:layout_constraintTop_toBottomOf="@+id/comunicacionBLE"
         app:layout_constraintVertical_bias="0.845" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/UUID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:backgroundTint="@color/black"
+        android:clickable="true"
+        android:translationZ="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/Recargar"
+        app:layout_constraintTop_toBottomOf="@+id/comunicacionBLE"
+        app:layout_constraintVertical_bias="0.857" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/UUIDbasic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:backgroundTint="@color/orange"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/UUID"
+        app:layout_constraintTop_toBottomOf="@+id/comunicacionBLE"
+        app:layout_constraintVertical_bias="0.857" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_center"
         android:layout_width="wrap_content"

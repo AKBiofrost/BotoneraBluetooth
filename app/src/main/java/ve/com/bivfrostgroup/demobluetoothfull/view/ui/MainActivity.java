@@ -24,8 +24,12 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelUuid;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,6 +41,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -47,6 +52,7 @@ import ve.com.bivfrostgroup.demobluetoothfull.controladores.BluetoothControlador
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.ConnectedThread;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.OnResponse;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.PeticionRetrofit;
+import ve.com.bivfrostgroup.demobluetoothfull.controladores.toastCustomer;
 import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.config;
 import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.peticion;
 import ve.com.bivfrostgroup.demobluetoothfull.interfaz.model.DefinicionRespuestaRetrofit;
@@ -55,8 +61,8 @@ import ve.com.bivfrostgroup.demobluetoothfull.interfaz.model.ErrorResponse;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "Emparejamiento BLuetooth";
-
-    private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
+    toastCustomer toast = new toastCustomer();
+    private UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
     private static final UUID MY_UUID_SECURE =
             UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
     private static final UUID MY_UUID_INSECURE =
@@ -80,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> mBTArrayAdapter2;
 
     private FloatingActionButton floatingActionButton;
+    private FloatingActionButton floatingActionButtonUUIDbasic;
+    private FloatingActionButton floatingActionButtonUUID;
 
     ActivityResultLauncher<Intent> startActivityIntent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -112,9 +120,6 @@ public class MainActivity extends AppCompatActivity {
         PermisoUbicacion();
         config.calibrar.PantallaEncendida(this);
 
-
-
-
     }
 
     @Override
@@ -125,12 +130,14 @@ public class MainActivity extends AppCompatActivity {
         Botones();
         RespuestaEmparejamiento();
 
+
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
         LimpiarLista();
+        mBTArrayAdapter2.clear(); // clear items
         listPairedDevices();
         discover();
 
@@ -215,13 +222,38 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (mBTAdapter.isEnabled() == true) {
                 Log.i(TAG, "INICIA ESCANEO DEL BLUETOOTH");
-                // mBTArrayAdapter.clear(); // clear items
+                 mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
                 registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
                 bluetoothOn();
             }
         }
+    }
+
+    private void GetUUID() {
+        try {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            Method getUuidsMethod = BluetoothAdapter.class.getDeclaredMethod("getUuids", null);
+            ParcelUuid[] uuids = (ParcelUuid[]) getUuidsMethod.invoke(adapter, null);
+
+            if (uuids != null) {
+                for (ParcelUuid uuid : uuids) {
+                    Log.d(TAG, "UUID: " + uuid.getUuid().toString());
+                    BT_MODULE_UUID = uuid.getUuid();
+                }
+            } else {
+                Log.d(TAG, "Uuids no encontrados, asegura habilitar Bluetooth!");
+            }
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void listPairedDevices() {
@@ -255,9 +287,9 @@ public class MainActivity extends AppCompatActivity {
                     //  String Prefijo3 = device.getName().charAt(2) +"";
                     String Prefijo = Prefijo1 + Prefijo2;
                     Log.d(TAG, "Prefijo: " + Prefijo1 + Prefijo2);
-                    if (Prefijo.equalsIgnoreCase("MP") == true) {
-                        mBTArrayAdapter2.add(device.getName() + "\n" + device.getAddress());
-                    }
+                    // if (Prefijo.equalsIgnoreCase("MP") == true) {
+                    mBTArrayAdapter2.add(device.getName() + "\n" + device.getAddress());
+                    // }
                 }
 
             }
@@ -270,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void SerDescubireto(){
+    private void SerDescubireto() {
         Intent discoverableIntent =
                 new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
@@ -297,15 +329,30 @@ public class MainActivity extends AppCompatActivity {
 
             floatingActionButton.setOnClickListener(v -> {
                 //  cTimer.cancel();
+                toast.toastGrande(this, "Recargar listas", 50);
+
                 LimpiarLista();
+                mBTArrayAdapter2.clear(); // clear items
                 listPairedDevices();
                 discover();
 
 
             });
 
+            floatingActionButtonUUIDbasic.setOnClickListener(v -> {
+
+                toast.toastGrande(this, "UUID seguridad generico", 50);
+                BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
+            });
+
+            floatingActionButtonUUID.setOnClickListener(v -> {
+
+                toast.toastGrande(this, "UUID seguridad del dispositivo ", 50);
+                GetUUID();
+            });
 
             mDiscoverBtn.setOnClickListener(v -> {
+                toast.toastGrande(this, "Radeando dispositivos", 50);
                 discover();
             });
             mOffBtn.setOnClickListener(v -> {
@@ -324,7 +371,9 @@ public class MainActivity extends AppCompatActivity {
             });
 
             mListBtn.setOnClickListener(v -> {
+                mBTArrayAdapter2.clear(); // clear items
                 LimpiarLista();
+
                 listPairedDevices();
 
             });
@@ -378,9 +427,13 @@ public class MainActivity extends AppCompatActivity {
 
         SerDescubierto = (Button) findViewById(R.id.SerDescubierto);
 
-        PermisosBLuetooth= (Button) findViewById(R.id.discover3);
+        PermisosBLuetooth = (Button) findViewById(R.id.discover3);
         // mListPairedDevicesBtn = (Button) findViewById(R.id.paired_btn);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.Recargar);
+
+        floatingActionButtonUUIDbasic = (FloatingActionButton) findViewById(R.id.UUIDbasic);
+        floatingActionButtonUUID = (FloatingActionButton) findViewById(R.id.UUID);
+
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         mBTArrayAdapter2 = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
@@ -389,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
         mDevicesListView2 = (ListView) findViewById(R.id.devices_list_view2);
         mDevicesListView2.setAdapter(mBTArrayAdapter2); // assign model to view
-        // mDevicesListView2.setOnItemClickListener(mDeviceClickListener);
+        mDevicesListView2.setOnItemClickListener(mDeviceClickListener);
         mListBtn = (Button) findViewById(R.id.discover2);
 
     }

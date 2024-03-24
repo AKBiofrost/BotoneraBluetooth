@@ -526,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
             final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
-            return (BluetoothSocket) m.invoke(device, MY_UUID_SECURE);
+            return (BluetoothSocket) m.invoke(device, BT_MODULE_UUID);
         } catch (Exception e) {
             Log.e(TAG, "Could not create Insecure RFComm Connection", e);
             config.Dialog.AlertDialog("FALLO", "Could not create Insecure RFComm Connection", this);
@@ -551,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.i(TAG, "createBluetoothSocket: " + device);
-        return device.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+        return device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
     }
 
     /*********************************************************************************************/

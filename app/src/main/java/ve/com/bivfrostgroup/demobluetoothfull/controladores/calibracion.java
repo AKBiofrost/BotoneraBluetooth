@@ -24,10 +24,10 @@ public class calibracion {
         Activity activity = (Activity) context;
         final PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            Log.e(TAG, " "+pm.getBatteryDischargePrediction());
-            Log.e(TAG, " "+pm.getCurrentThermalStatus());
-            Log.e(TAG, " "+pm.getLocationPowerSaveMode());
-            Log.e(TAG, " "+pm.isDeviceIdleMode());
+            Log.e(TAG, "TEST"+pm.getBatteryDischargePrediction());
+            Log.e(TAG, "TEST"+pm.getCurrentThermalStatus());
+            Log.e(TAG, "TEST"+pm.getLocationPowerSaveMode());
+            Log.e(TAG, "TEST"+pm.isDeviceIdleMode());
 
 
         }

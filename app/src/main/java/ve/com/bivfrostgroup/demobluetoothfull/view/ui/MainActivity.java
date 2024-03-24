@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (mBTAdapter.isEnabled() == true) {
                 Log.i(TAG, "INICIA ESCANEO DEL BLUETOOTH");
-                 mBTArrayAdapter.clear(); // clear items
+                mBTArrayAdapter.clear(); // clear items
                 mBTAdapter.startDiscovery();
                 registerReceiver(blReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             } else {
@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
         mDevicesListView2 = (ListView) findViewById(R.id.devices_list_view2);
         mDevicesListView2.setAdapter(mBTArrayAdapter2); // assign model to view
-        mDevicesListView2.setOnItemClickListener(mDeviceClickListener);
+        mDevicesListView2.setOnItemClickListener(mDeviceClickListenerList);
         mListBtn = (Button) findViewById(R.id.discover2);
 
     }
@@ -576,6 +576,83 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    private AdapterView.OnItemClickListener mDeviceClickListenerList = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // config.Dialog.AlertDialog_alerta_Informar("Espere un momento", "Procesando petición",  MainActivity.this);
+            //  cTimer.cancel();
+            if (mBTAdapter.isEnabled() == false) {
+                bluetoothOn();
+            } else {
+                String info = ((TextView) view).getText().toString();
+                address = info.substring(info.length() - 17);
+                name = info.substring(0, info.length() - address.length() - 1);
+                Log.i(TAG, "Seleccinado address: " + address);
+                Log.i(TAG, "Seleccinado name: " + name);
+                TextView estatus = findViewById(R.id.estado);
+                estatus.setVisibility(View.VISIBLE);
+                // cTimer.cancel();     BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
+
+                if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        if (Build.VERSION.SDK_INT >= 31) {
+
+                            Toast.makeText(MainActivity.this, "VERSION ES: " + Build.VERSION.SDK_INT, Toast.LENGTH_LONG).show();
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 3);
+
+                        }
+                    }
+
+                } else {
+
+                }
+
+                if (Build.VERSION.SDK_INT >= 31) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 3);
+                }
+
+                BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+
+                for (BluetoothDevice device : pairedDevices) {
+                    Log.i(TAG, "device->: " + device); //log para conocer dispositivo
+                    Log.i(TAG, "address->: " + address); //log para conocer dispositivo
+                    Log.e(TAG, "name->: " + name); //log para conocer dispositivo
+                    Log.e(TAG, "name->: " + name.length()); //log para conocer dispositivo
+                    Log.i(TAG, "--------------------------------"); //log para conocer dispositivo
+                    Log.e(TAG, "device.getName()->: " + device.getName()); //log para conocer dispositivo
+                    Log.e(TAG, "device.getName()->: " + device.getName().length()); //log para conocer dispositivo
+                    Log.e(TAG, "device.getName().equals(name)->: " + device.getName().equals(name)); //log para conocer dispositivo
+                    if (device.getName().equals(name)) {
+                        Log.i(TAG, "device: " + device); //log para conocer dispositivo
+                        Log.i(TAG, "device: " + device); //log para conocer dispositivo
+                        Log.e(TAG, "device.getName()->: " + device.getName()); //log para conocer dispositivo
+                        try {
+                            toast.toastGrande(MainActivity.this, "Desvinculando:" + device.getName(),30);
+                            Method m = device.getClass().getMethod("removeBond", (Class[]) null);
+                            m.invoke(device, (Object[]) null);
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "fallo: " + e.getCause().toString());
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+            }
+            mBTArrayAdapter2.clear(); // clear items
+            LimpiarLista();
+
+        }
+
+
+    };
+
+
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
             final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
@@ -639,4 +716,15 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         // cTimer.cancel();
     }
+
+
 }
+
+
+
+
+
+
+
+
+

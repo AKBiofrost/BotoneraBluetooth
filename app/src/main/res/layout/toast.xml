@@ -14,11 +14,13 @@
         android:layout_height="match_parent"
         app:cardCornerRadius="30dp"
         app:cardElevation="20dp"
+        android:layout_gravity="center"
         >
         <TextView android:id="@+id/text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textStyle="bold"
+            android:gravity="center"
             android:textColor="#000" />
     </androidx.cardview.widget.CardView>
 

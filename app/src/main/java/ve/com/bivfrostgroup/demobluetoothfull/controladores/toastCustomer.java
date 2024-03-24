@@ -27,7 +27,7 @@ public class toastCustomer {
         text.setTextSize(Size);
         layout.animate().start();
         Toast toast = new Toast(activity.getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setGravity(Gravity.BOTTOM, 0, 0);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.setView(layout);
 

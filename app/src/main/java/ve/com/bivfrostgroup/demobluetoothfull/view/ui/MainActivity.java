@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -27,9 +29,8 @@ import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -51,7 +52,6 @@ import ve.com.bivfrostgroup.demobluetoothfull.R;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.BluetoothControladores;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.ConnectedThread;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.OnResponse;
-import ve.com.bivfrostgroup.demobluetoothfull.controladores.peticion.PeticionRetrofit;
 import ve.com.bivfrostgroup.demobluetoothfull.controladores.toastCustomer;
 import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.config;
 import ve.com.bivfrostgroup.demobluetoothfull.interfaz.config.peticion;
@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
     public final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
-    private CountDownTimer cTimer = null;
     private Button SerDescubierto;
     private Button mOffBtn;
     private Button PermisosBLuetooth;
+    private Button LimpiarListas;
     private Button mDiscoverBtn;
     private Button mListBtn;
     private ListView mDevicesListView;
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     static String address;
     static String name;
-    static BluetoothControladores BTControlador = new BluetoothControladores();
+
     private Handler mHandler; // Our main handler that will receive callback notifications
     private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
@@ -113,12 +113,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        BTControlador.BTPermissions(this);
-        BTControlador.PermisoUbicacion(this);
-        BTControlador.checkPermissions(this);
+        config.BTControlador.BTPermissions(this);
+        config.BTControlador.PermisoUbicacion(this);
+        config.BTControlador.checkPermissions(this);
+        config.timeOut.startTimer(3000, 1, "Timeout", this);
+        config.calibrar.PantallaEncendida(this);
         InstanciarObjetos();
         PermisoUbicacion();
-        config.calibrar.PantallaEncendida(this);
+
 
     }
 
@@ -316,8 +318,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        // cTimer.cancel();
-        // cTimer.start();
+        config.timeOut.cancelTimer();
+        config.timeOut.initTimer();
     }
 
     private void Botones() {
@@ -356,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 discover();
             });
             mOffBtn.setOnClickListener(v -> {
+                config.Toas.toastGrande(mContext, "Apagando BLuetooth", 25);
                 bluetoothOff();
             });
 
@@ -363,10 +366,18 @@ public class MainActivity extends AppCompatActivity {
                 SerDescubireto();
             });
 
+
+            LimpiarListas.setOnClickListener(v -> {
+                mBTArrayAdapter2.clear(); // clear items
+                LimpiarLista();
+            });
+
+
             PermisosBLuetooth.setOnClickListener(v -> {
-                BTControlador.BTPermissions(this);
-                BTControlador.PermisoUbicacion(this);
-                BTControlador.checkPermissions(this);
+                config.Toas.toastGrande(this, "verificando permisos", 25);
+                config.BTControlador.BTPermissions(this);
+                config.BTControlador.PermisoUbicacion(this);
+                config.BTControlador.checkPermissions(this);
                 PermisoUbicacion();
             });
 
@@ -405,9 +416,9 @@ public class MainActivity extends AppCompatActivity {
                     char[] sConnected;
                     Log.d(TAG, "msg.arg1: " + msg.arg1);
                     if (msg.arg1 == 1) {
-                        config.Dialog.AlertDialog("Emparejo BLuetooth", "Connecting", mContext);
+                        config.Dialog.AlertDialog("Emparejo BLuetooth", "Conexion Exitosa", mContext);
                     } else {
-                        config.Dialog.AlertDialog("Ya estaba emparejado", "Connected", mContext);
+                        config.Toas.toastGrande(mContext, "Fallo de conexion", 50);
                     }
 
                 }
@@ -426,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
         mOffBtn = (Button) findViewById(R.id.ApagarBLuetooth);
 
         SerDescubierto = (Button) findViewById(R.id.SerDescubierto);
-
+        LimpiarListas = (Button) findViewById(R.id.comunicacionBLE);
         PermisosBLuetooth = (Button) findViewById(R.id.discover3);
         // mListPairedDevicesBtn = (Button) findViewById(R.id.paired_btn);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.Recargar);
@@ -563,7 +574,9 @@ public class MainActivity extends AppCompatActivity {
 
                             mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name)
                                     .sendToTarget();
+
                         } else {
+                            //
                             mHandler.obtainMessage(CONNECTING_STATUS, 1, -1, name)
                                     .sendToTarget();
 
@@ -631,7 +644,9 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "device: " + device); //log para conocer dispositivo
                         Log.e(TAG, "device.getName()->: " + device.getName()); //log para conocer dispositivo
                         try {
-                            toast.toastGrande(MainActivity.this, "Desvinculando:" + device.getName(),30);
+                            Toast toast = Toast.makeText(MainActivity.this, "Desvinculando", Toast.LENGTH_LONG);
+                            toast.show();
+                            config.Dialog.AlertDialog("Desvinculando", "Desvinculando " + device.getName(), MainActivity.this);
                             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
                             m.invoke(device, (Object[]) null);
 
@@ -709,6 +724,44 @@ public class MainActivity extends AppCompatActivity {
         );
 
     }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //replaces the default 'Back' button action
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            config.Toas.toastGrande(this, "Back", 25);
+        }
+
+        if (keyCode == KeyEvent.KEYCODE_0) {
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        Log.i(TAG, "onLeaveHint");
+        config.Toas.toastGrande(this, "onLeaveHint", 25);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            config.Toas.toastGrande(this, "LANDSCAPE", 25);
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+        }
+        config.Toas.toastGrande(this, "PORTRAIT", 25);
+
+
+    }
+
 
     @Override
     protected void onDestroy() {

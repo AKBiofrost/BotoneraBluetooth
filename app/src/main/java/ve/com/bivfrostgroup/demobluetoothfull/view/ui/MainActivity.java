@@ -57,15 +57,18 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "Emparejamiento BLuetooth";
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // "random" unique identifier
-
+    private static final UUID MY_UUID_SECURE =
+            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    private static final UUID MY_UUID_INSECURE =
+            UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
     // #defines for identifying shared types between calling functions
     private final static int REQUEST_ENABLE_BT = 1; // used to identify adding bluetooth names
     public final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
     private CountDownTimer cTimer = null;
-    private Button mScanBtn;
+    private Button SerDescubierto;
     private Button mOffBtn;
-    private Button mListPairedDevicesBtn;
+    private Button PermisosBLuetooth;
     private Button mDiscoverBtn;
     private Button mListBtn;
     private ListView mDevicesListView;
@@ -108,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
         InstanciarObjetos();
         PermisoUbicacion();
         config.calibrar.PantallaEncendida(this);
+
+
+
 
     }
 
@@ -264,6 +270,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void SerDescubireto(){
+        Intent discoverableIntent =
+                new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+
+        startActivityIntent.launch(discoverableIntent);
+
+    }
+
 
     /*********************************************************************************************/
     @Override
@@ -282,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
 
             floatingActionButton.setOnClickListener(v -> {
                 //  cTimer.cancel();
+                LimpiarLista();
                 listPairedDevices();
                 discover();
 
@@ -289,16 +305,26 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-            mDiscoverBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    discover();
-                }
+            mDiscoverBtn.setOnClickListener(v -> {
+                discover();
+            });
+            mOffBtn.setOnClickListener(v -> {
+                bluetoothOff();
             });
 
+            SerDescubierto.setOnClickListener(v -> {
+                SerDescubireto();
+            });
+
+            PermisosBLuetooth.setOnClickListener(v -> {
+                BTControlador.BTPermissions(this);
+                BTControlador.PermisoUbicacion(this);
+                BTControlador.checkPermissions(this);
+                PermisoUbicacion();
+            });
 
             mListBtn.setOnClickListener(v -> {
-
+                LimpiarLista();
                 listPairedDevices();
 
             });
@@ -323,11 +349,12 @@ public class MainActivity extends AppCompatActivity {
                 if (msg.what == MESSAGE_READ) {
                     String readMessage = null;
                     readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
-                    config.Dialog.AlertDialog("BLuetooth", readMessage, mContext);
+                    // config.Dialog.AlertDialog("BLuetooth", readMessage, mContext);
                 }
 
                 if (msg.what == CONNECTING_STATUS) {
                     char[] sConnected;
+                    Log.d(TAG, "msg.arg1: " + msg.arg1);
                     if (msg.arg1 == 1) {
                         config.Dialog.AlertDialog("Emparejo BLuetooth", "Connecting", mContext);
                     } else {
@@ -346,6 +373,12 @@ public class MainActivity extends AppCompatActivity {
         //mScanBtn = (Button) findViewById(R.id.scan);
         // mOffBtn = (Button) findViewById(R.id.off);
         mDiscoverBtn = (Button) findViewById(R.id.discover);
+
+        mOffBtn = (Button) findViewById(R.id.ApagarBLuetooth);
+
+        SerDescubierto = (Button) findViewById(R.id.SerDescubierto);
+
+        PermisosBLuetooth= (Button) findViewById(R.id.discover3);
         // mListPairedDevicesBtn = (Button) findViewById(R.id.paired_btn);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.Recargar);
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
@@ -356,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
         mDevicesListView2 = (ListView) findViewById(R.id.devices_list_view2);
         mDevicesListView2.setAdapter(mBTArrayAdapter2); // assign model to view
-        mDevicesListView2.setOnItemClickListener(mDeviceClickListener);
+        // mDevicesListView2.setOnItemClickListener(mDeviceClickListener);
         mListBtn = (Button) findViewById(R.id.discover2);
 
     }
@@ -393,9 +426,8 @@ public class MainActivity extends AppCompatActivity {
                     String Prefijo3 = device.getName().charAt(2) + "";
                     String Prefijo = Prefijo1 + Prefijo2 + Prefijo3;
                     Log.d(TAG, "Prefijo: " + Prefijo1 + Prefijo2 + Prefijo3);
-                    if (Prefijo.equalsIgnoreCase("MP-") == true) {
-                        mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    }
+                    mBTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+
 
                 }
 
@@ -494,9 +526,10 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
             final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
-            return (BluetoothSocket) m.invoke(device, BT_MODULE_UUID);
+            return (BluetoothSocket) m.invoke(device, MY_UUID_SECURE);
         } catch (Exception e) {
             Log.e(TAG, "Could not create Insecure RFComm Connection", e);
+            config.Dialog.AlertDialog("FALLO", "Could not create Insecure RFComm Connection", this);
         }
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
@@ -518,13 +551,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.i(TAG, "createBluetoothSocket: " + device);
-        return device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+        return device.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
     }
 
     /*********************************************************************************************/
 
     public void LimpiarLista() {
         mBTArrayAdapter.clear(); // clear items
+        mBTArrayAdapter2.clear(); // clear items
     }
 
 

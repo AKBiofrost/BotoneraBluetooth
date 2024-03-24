@@ -39,7 +39,7 @@
             android:id="@+id/discover"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/green2"
+            android:background="@color/blue"
             android:textColor="@color/white"
             android:text="Nuevos Dispositivos" />
 
@@ -57,6 +57,7 @@
                 android:id="@+id/devices_list_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:padding="20dp"
                 android:choiceMode="singleChoice">
             </ListView>
         </androidx.cardview.widget.CardView>
@@ -116,6 +117,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout332" />
+    <Button
+        android:id="@+id/SerDescubierto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green2"
+        android:layout_marginTop="10dp"
+        android:text="Ser descubierto"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/discover3" />
+
+    <Button
+        android:id="@+id/ApagarBLuetooth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/orange"
+        android:text="Apagar Bluetooth"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SerDescubierto" />
+
+    <Button
+        android:id="@+id/comunicacionBLE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/blue"
+        android:text="comunicacion BLE"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ApagarBLuetooth" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/Recargar"
@@ -125,21 +162,22 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/discover3" />
+        app:layout_constraintTop_toBottomOf="@+id/comunicacionBLE"
+        app:layout_constraintVertical_bias="0.845" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_center"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.40" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_horizontal_center2"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.85" />
+        app:layout_constraintGuide_percent="0.60" />
 
     <TextView
         android:id="@+id/estado"
@@ -149,5 +187,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/Recargar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/discover3" />
+        app:layout_constraintTop_toBottomOf="@+id/comunicacionBLE" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,11 +20,18 @@ public class calibracion {
 
  private static String TAG = calibracion.class.getSimpleName();
     public void PantallaEncendida(Context context) {
-        PowerManager.WakeLock mWakeLock;
+        PowerManager.WakeLock mWakeLock = null;
         Activity activity = (Activity) context;
         final PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            Log.e(TAG, " "+pm.getBatteryDischargePrediction());
+            Log.e(TAG, " "+pm.getCurrentThermalStatus());
+            Log.e(TAG, " "+pm.getLocationPowerSaveMode());
+            Log.e(TAG, " "+pm.isDeviceIdleMode());
 
+
+        }
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     public boolean isOnline(Context context) {
